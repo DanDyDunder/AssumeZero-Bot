@@ -56,7 +56,7 @@ function main(err, api) {
     stopListening = api.listenMqtt(handleMessage);
     // Kick off the event handler
     setInterval(eventLoop, config.eventCheckInterval * 60000);
-    setInterval(dinnerLoop, 3600000);
+    setInterval(dinnerLoop, 120000);
     startKeepAlive();
 
 
