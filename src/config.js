@@ -1,11 +1,11 @@
 // The trigger word that precedes most commands and will activate the bot
-exports.trigger = "physics";
+exports.trigger = "thereisnotrigger";
 
 // Bot owner information
 exports.owner = {
     "names": {
-        "short": "Cameron",
-        "long": "Cameron Bernhardt"
+        "short": "Danny",
+        "long": "Danny Delic"
     },
     "id": "100007016509302" // ID of bot owner (for secure commands, reports, and alerts)
 };
@@ -13,8 +13,8 @@ exports.owner = {
 // Bot information
 exports.bot = {
     "names": {
-        "short": "AØBøt", // Will be used as 'nickname' in chat (remove if same as account name)
-        "long": "AssumeZero Bot" // Name displayed in profile on bot's Facebook account
+        "short": "Peter", // Will be used as 'nickname' in chat (remove if same as account name)
+        "long": "Peter Profil" // Name displayed in profile on bot's Facebook account
     },
     "id": "100041587845629" // Bot's ID (for security purposes in commands)
 };
@@ -34,14 +34,14 @@ exports.defaultTitle = "Unnamed chat";
 
 // Heroku settings (might need to tweak some things if using another host)
 // App name
-exports.appName = "assume-bot";
+exports.appName = "tolvseks";
 
 // Server URL
-exports.serverURL = `http://${exports.appName}.herokuapp.com`;
+exports.serverURL = `tolvseks.herokuapp.com`;
 
 // Whether the bot should sleep at night to preserve dyno hours
 // If not, it will ping the server every 20 min to keep it awake
-exports.shouldSleep = false;
+exports.shouldSleep = true;
 
 // What time the bot should sleep in your timezone
 exports.localSleepTime = 3;
@@ -50,7 +50,7 @@ exports.localSleepTime = 3;
 exports.localWakeTime = 9;
 
 // Your desired timezone for displaying times
-exports.timeZone = "America/New_York";
+exports.timeZone = "Europe/Copenhagen";
 
 // Time in seconds to ban users for Order 66
 exports.order66Time = 15;

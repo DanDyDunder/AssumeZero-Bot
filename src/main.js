@@ -3,6 +3,8 @@
 */
 
 // Dependencies
+const fetch = require("node-fetch");
+const http = require('http'); //importing http
 const botcore = require("messenger-botcore"); // Common bot code
 const config = require("./config"); // Config file
 const utils = require("./utils"); // Utility functions
@@ -54,6 +56,9 @@ function main(err, api) {
     stopListening = api.listenMqtt(handleMessage);
     // Kick off the event handler
     setInterval(eventLoop, config.eventCheckInterval * 60000);
+    setInterval(dinnerLoop, 3600000);
+    startKeepAlive();
+
 
     // Tell process manager that this process is ready
     process.send ? process.send("ready") : null;
@@ -90,11 +95,26 @@ function handleMessage(err, message, external = false, api = gapi) { // New mess
                         const attachments = message.attachments;
                         // Handle message body
                         if (m) {
-                            // Pass to commands testing for trigger word
-                            const cindex = m.toLowerCase().indexOf(config.trigger);
-                            if (cindex > -1) { // Trigger command mode
-                                // Also pass full message obj in case it's needed in a command
-                                handleCommand(m.substring(cindex + config.trigger.length + 1), senderId, info, message);
+                            // Pass to commands testing for trigger word 
+                            switch (m.toLowerCase().trim()) {
+                                case "who is milad":
+                                    utils.milad(message.threadID);
+                                    break;
+                                case "who is danny":
+                                    utils.danny(message.threadID);
+                                    break;
+                                case "who is morten":
+                                    utils.morten(message.threadID);
+                                    break;
+                                case "who has dinner":
+                                    utils.dinner(message.threadID);
+                                    break;
+                                default:
+                                    const cindex = m.toLowerCase().indexOf(config.trigger);
+                                    if (cindex > -1) { // Trigger command mode
+                                        // Also pass full message obj in case it's needed in a command
+                                        handleCommand(m.substring(cindex + config.trigger.length + 1), senderId, info, message);
+                                    }
                             }
 
                             // Check for Easter eggs
@@ -272,30 +292,113 @@ function eventLoop() {
                     }
                 }
             });
+        }
+    });
+}
 
-            /* ---------------*/
-            /* TWITTER EVENTS */
-            /* ---------------*/
+function dinnerLoop() {
+    utils.getGroupData((err, data) => {
+        if (!err) {
+            const curTime = new Date();
+            const curWeek = curTime.getWeek();
+            let followingWeek = curWeek + 1 == 53 ? 1 : curWeek + 1;
+            const isSunday = curTime.getDay() == 0;
+            const isLaterThanEight = curTime.getHours() > 19;
+            console.log(curTime.getDay);
+            console.log(curTime.getHours);
 
-            Object.keys(data).forEach(threadId => {
-                const groupInfo = data[threadId];
-                const followedUsers = groupInfo.following;
+            // Tjek hver time
+            // Hvis det er søndag og senere end 8, gør ting
+            // Hent JSON
+            // Find denne uge
+            // Skriv beskeden
+            // med hashtags? Eller skrev ingenting for undefined
+            // Update JSON
 
-                Object.keys(followedUsers).forEach(username => {
-                    utils.getLatestTweetID(username, (err, id) => {
-                        if (!err) {
-                            if (followedUsers[username] !== id) {
-                                // New tweet since last check; store it
-                                followedUsers[username] = id;
-                                utils.setGroupProperty("following", followedUsers, groupInfo);
-
-                                // Send the new tweet to the chat
-                                utils.sendTweetMsg(id, threadId, true);
+            if (isSunday && isLaterThanEight) {
+                fetch('https://api.jsonbin.io/b/5fb8004ca825731fc0a06b46', {
+                    method: 'GET',
+                    headers: {
+                        'secret-key': '$2b$10$MMGmsN0DCYK/mOtNPlgcpOMeidqM19dsvK.whKAJYIvjTdWsgHEvm'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(json => {
+                        for (let g in data) {
+                            if (data[g].isGroup) {
+                                let updatedJSON = json;
+                                const chefs = json[followingWeek];
+                                if (chefs) {
+                                    const reminder = "REMINDER! The chefs of the next week are: " + chefs;
+                                    for (let threadID in data) {
+                                        utils.sendMessage(reminder, threadID);
+                                    }
+                                    delete updatedJSON[followingWeek];
+                                    let updatedString = JSON.stringify(updatedJSON);
+                                    console.log(updatedJSON);
+                                    fetch('https://api.jsonbin.io/b/5fb8004ca825731fc0a06b46', {
+                                        method: 'PUT',
+                                        headers: {
+                                            'secret-key': '$2b$10$MMGmsN0DCYK/mOtNPlgcpOMeidqM19dsvK.whKAJYIvjTdWsgHEvm',
+                                            'Content-Type': 'application/json',
+                                            'versioning': 'false'
+                                        },
+                                        body: updatedString
+                                    }).then(response => response.json()).then(json => console.log(json));
+                                }
                             }
                         }
                     });
-                });
-            });
+            }
         }
     });
+}
+
+Date.prototype.getWeek = function (dowOffset) {
+    dowOffset = typeof (dowOffset) == 'int' ? dowOffset : 0; //default dowOffset to zero
+    var newYear = new Date(this.getFullYear(), 0, 1);
+    var day = newYear.getDay() - dowOffset; //the day of week the year begins on
+    day = (day >= 0 ? day : day + 7);
+    var daynum = Math.floor((this.getTime() - newYear.getTime() -
+        (this.getTimezoneOffset() - newYear.getTimezoneOffset()) * 60000) / 86400000) + 1;
+    var weeknum;
+    //if the year starts before the middle of a week
+    if (day < 4) {
+        weeknum = Math.floor((daynum + day - 1) / 7) + 1;
+        if (weeknum > 52) {
+            nYear = new Date(this.getFullYear() + 1, 0, 1);
+            nday = nYear.getDay() - dowOffset;
+            nday = nday >= 0 ? nday : nday + 7;
+            /*if the next year starts before the middle of
+              the week, it is week #1 of that year*/
+            weeknum = nday < 4 ? 1 : 53;
+        }
+    }
+    else {
+        weeknum = Math.floor((daynum + day - 1) / 7);
+    }
+    return weeknum;
+};
+
+function startKeepAlive() {
+    console.log("started");
+    setInterval(function () {
+        var options = {
+            host: 'tolvseks.herokuapp.com',
+            port: 80,
+            path: '/'
+        };
+        http.get(options, function (res) {
+            res.on('data', function (chunk) {
+                try {
+                    // optional logging... disable after it's working
+                    console.log("Anti idle");
+                } catch (err) {
+                    console.log(err.message);
+                }
+            });
+        }).on('error', function (err) {
+            console.log("Error: " + err.message);
+        });
+    }, 20 * 60 * 1000); // load every 20 minutes
 }

@@ -1,4 +1,5 @@
 const fs = require("fs"); // File system
+const fetch = require("node-fetch");
 const request = require("request"); // For HTTP requests
 const jimp = require("jimp"); // For image processing
 const chrono = require("chrono-node"); // For NL date parsing
@@ -77,6 +78,35 @@ exports.matchesWithUser = (command, message, fromUserId, groupData, optional = f
     }
     return match;
 };
+
+exports.milad = (threadID) => {
+    this.sendMessage(`Milad, also known as 'Me Rat' and sometimes 'Milli', is a coward of the highest degree, despite studying law, has a difficult times not cheating in games. Simply put, definitely not built different`, threadID);
+}
+
+exports.danny = (threadID) => {
+    this.sendMessage(`Danny is a beast, a leader, engineered for greatness, doctors still cannot find the source for his greatness.. he is just built different`, threadID);
+}
+
+exports.morten = (threadID) => {
+    this.sendMessage(`You mean Peter?`, threadID);
+}
+
+exports.dinner = (threadID) => {
+    const curWeek = new Date().getWeek();
+    console.log(curWeek);
+    fetch('https://api.jsonbin.io/b/5fb6fe1c02f80c2af522ff92', {
+        method: 'GET',
+        headers: {
+            'secret-key': '$2b$10$MMGmsN0DCYK/mOtNPlgcpOMeidqM19dsvK.whKAJYIvjTdWsgHEvm'
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            const cooks = data[curWeek];
+            if (cooks == undefined) this.sendMessage(`There are no cooks this week`, threadID);
+            else this.sendMessage((cooks + " are the assigned chefs this week!"), threadID);
+        });
+}
 
 /*
 Wrapper function for sending messages easily
@@ -1822,4 +1852,30 @@ exports.getLatestTweetID = (handle, callback) => {
             });
         }
     });
+};
+
+Date.prototype.getWeek = function (dowOffset) {
+    dowOffset = typeof (dowOffset) == 'int' ? dowOffset : 0; //default dowOffset to zero
+    var newYear = new Date(this.getFullYear(), 0, 1);
+    var day = newYear.getDay() - dowOffset; //the day of week the year begins on
+    day = (day >= 0 ? day : day + 7);
+    var daynum = Math.floor((this.getTime() - newYear.getTime() -
+        (this.getTimezoneOffset() - newYear.getTimezoneOffset()) * 60000) / 86400000) + 1;
+    var weeknum;
+    //if the year starts before the middle of a week
+    if (day < 4) {
+        weeknum = Math.floor((daynum + day - 1) / 7) + 1;
+        if (weeknum > 52) {
+            nYear = new Date(this.getFullYear() + 1, 0, 1);
+            nday = nYear.getDay() - dowOffset;
+            nday = nday >= 0 ? nday : nday + 7;
+            /*if the next year starts before the middle of
+              the week, it is week #1 of that year*/
+            weeknum = nday < 4 ? 1 : 53;
+        }
+    }
+    else {
+        weeknum = Math.floor((daynum + day - 1) / 7);
+    }
+    return weeknum;
 };
