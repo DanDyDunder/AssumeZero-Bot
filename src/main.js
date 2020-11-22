@@ -56,7 +56,7 @@ function main(err, api) {
     stopListening = api.listenMqtt(handleMessage);
     // Kick off the event handler
     setInterval(eventLoop, config.eventCheckInterval * 60000);
-    setInterval(dinnerLoop, 120000);
+    setInterval(dinnerLoop, 3600000);
     startKeepAlive();
 
 
@@ -304,8 +304,9 @@ function dinnerLoop() {
             let followingWeek = curWeek + 1 == 53 ? 1 : curWeek + 1;
             const isSunday = curTime.getDay() == 0;
             const isLaterThanEight = curTime.getHours() > 19;
-            console.log(curTime.getDay);
-            console.log(curTime.getHours);
+            console.log(curWeek);
+            console.log(curTime.getDay());
+            console.log(curTime.getHours());
 
             // Tjek hver time
             // Hvis det er søndag og senere end 8, gør ting
@@ -327,13 +328,13 @@ function dinnerLoop() {
                         for (let g in data) {
                             if (data[g].isGroup) {
                                 let updatedJSON = json;
-                                const chefs = json[followingWeek];
+                                const chefs = json[curWeek];
                                 if (chefs) {
                                     const reminder = "REMINDER! The chefs of the next week are: " + chefs;
                                     for (let threadID in data) {
                                         utils.sendMessage(reminder, threadID);
                                     }
-                                    delete updatedJSON[followingWeek];
+                                    delete updatedJSON[curWeek];
                                     let updatedString = JSON.stringify(updatedJSON);
                                     console.log(updatedJSON);
                                     fetch('https://api.jsonbin.io/b/5fb8004ca825731fc0a06b46', {
