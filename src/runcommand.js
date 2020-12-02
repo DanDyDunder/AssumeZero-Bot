@@ -284,11 +284,8 @@ const funcs = {
                                                 message += `${tracks[i].name}${tracks[i].explicit ? " (Explicit)" : ""} (from ${tracks[i].album.name})${(i != config.spotifySearchLimit - 1) ? "\n" : ""}`;
                                             }
                                         }
-
-                                        if (image) {
-                                            // Send image of artist
-                                            utils.sendFilesFromUrl(image, threadId, message);
-                                        } else if (link) {
+                                        
+                                        if (link) {
                                             // Just send link
                                             utils.sendMessage({
                                                 "body": message,
