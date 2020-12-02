@@ -284,7 +284,7 @@ const funcs = {
                                                 message += `${tracks[i].name}${tracks[i].explicit ? " (Explicit)" : ""} (from ${tracks[i].album.name})${(i != config.spotifySearchLimit - 1) ? "\n" : ""}`;
                                             }
                                         }
-                                        
+
                                         if (link) {
                                             // Just send link
                                             utils.sendMessage({
@@ -314,16 +314,12 @@ const funcs = {
                                 const url = bestMatch.external_urls.spotify;
                                 const preview = bestMatch.preview_url;
 
-                                if (preview) {
-                                    // Upload preview
-                                    utils.sendFilesFromUrl(preview, threadId, message);
-                                } else {
+                
                                     // Just send Spotify URL
                                     utils.sendMessage({
                                         "body": "",
                                         "url": url
                                     }, threadId);
-                                }
                             } else {
                                 utils.sendError(`No results found for query "${query}"`, threadId);
                             }
