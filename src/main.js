@@ -96,21 +96,26 @@ function handleMessage(err, message, external = false, api = gapi) { // New mess
                         // Handle message body
                         if (m) {
                             // Pass to commands testing for trigger word 
-                            switch (m.toLowerCase().trim()) {
-                                case "who is milad":
+                            const sentMsg = m.toLowerCase().trim();
+                            switch (true) {
+                                case sentMsg.startsWith("who is milad"):
                                     utils.milad(message.threadID);
                                     break;
-                                case "who is danny":
+                                case sentMsg.startsWith("who is danny"):
                                     utils.danny(message.threadID);
                                     break;
-                                case "who is morten":
+                                case sentMsg.startsWith("who is morten"):
                                     utils.morten(message.threadID);
                                     break;
-                                case "who has dinner":
+                                case sentMsg.startsWith("who has dinner"):
                                     utils.dinner(message.threadID);
                                     break;
-                                case "this is so sad, peter play despacito":
+                                case sentMsg.startsWith("this is so sad, peter play despacito"):
                                     handleCommand("search song justin bieber despacito", senderId, info, message);
+                                    break;
+                                case sentMsg.startsWith("peter play"):
+                                    const songCommand = "search song " + sentMsg.substring(11);
+                                    handleCommand(songCommand, senderId, info, message);
                                     break;
                                 default:
                                     const cindex = m.toLowerCase().indexOf(config.trigger);
