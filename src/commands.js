@@ -220,22 +220,6 @@ exports.categories = {
                 "regex": ["kick", "(?: (\\d+))?"], // Optional number param after name
                 "experimental": false
             },
-            "addsearch": {
-                "display_names": ["add", "search"],
-                "pretty_name": "Add/search",
-                "short_description": "",
-                "description": "Searches for the given user and either outputs the best match (for searching) or adds it to the chat (for adding)",
-                "syntax": "(add|search ({number of results})) {user}",
-                "example": ["search Physics Resurrected", "add Physics Resurrected", "search 5 Physics Resurrected"],
-                "sudo": false,
-                "attachments": false,
-                "user_input": {
-                    "accepts": false,
-                    "optional": false
-                },
-                "regex": /(add|search(?: (\d*))?) (.*)/i,
-                "experimental": false
-            },
 
             "color": {
                 "display_names": ["color"],

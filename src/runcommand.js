@@ -322,7 +322,7 @@ const funcs = {
                                 } else {
                                     // Just send Spotify URL
                                     utils.sendMessage({
-                                        "body": message,
+                                        "body": "",
                                         "url": url
                                     }, threadId);
                                 }
@@ -602,39 +602,6 @@ const funcs = {
             utils.setGroupProperty("tab", newTab, groupInfo, err => {
                 if (!err) { utils.sendMessage(`Tab updated to $${newTab.toFixed(2)}.`, threadId); }
             });
-        }
-    },
-    "addsearch": (threadId, cmatch, groupInfo, api) => {
-        // Fields 1 & 3 are are for the command and the user, respectively
-        // Field 2 is for an optional number parameter specifying the number of search results
-        // for a search command (default is 1)
-        const user = cmatch[3];
-        const command = cmatch[1].split(" ")[0].toLowerCase(); // Strip opt parameter from match if present
-        try {
-            api.getUserID(user, (err, data) => {
-                if (!err) {
-                    const filteredData = data.filter(m => m.type == "user");
-                    const bestMatch = filteredData[0]; // Hopefully the right person
-                    const numResults = parseInt(cmatch[2]) || 1; // Number of results to display
-                    if (command == "search") { // Is a search command
-                        // Output search results / propic
-                        for (let i = 0; i < numResults; i++) {
-                            // Passes number of match to indicate level (closeness to top)
-                            utils.searchForUser(data[i], threadId, i);
-                        }
-                    } else { // Is an add command
-                        // Add best match to group and update log of member IDs
-                        utils.addUser(bestMatch.userID, groupInfo);
-                    }
-                } else {
-                    if (err.error) {
-                        // Fix typo in API error message
-                        utils.sendError(`${err.error.replace("Bes", "Best")}`, threadId);
-                    }
-                }
-            });
-        } catch (e) {
-            utils.sendError(`User ${user} not recognized`);
         }
     },
     "order66": (threadId, _, groupInfo, __, senderId) => {
