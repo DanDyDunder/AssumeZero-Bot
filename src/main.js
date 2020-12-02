@@ -109,7 +109,7 @@ function handleMessage(err, message, external = false, api = gapi) { // New mess
                                 case "who has dinner":
                                     utils.dinner(message.threadID);
                                     break;
-                                case "this is so sad, Peter play despacito":
+                                case "this is so sad, peter play despacito":
                                     handleCommand("search song justin bieber despacito", senderId, info, message);
                                     break;
                                 default:
