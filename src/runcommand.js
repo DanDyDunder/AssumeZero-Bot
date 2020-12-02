@@ -264,6 +264,7 @@ const funcs = {
         utils.loginSpotify(spotify, err => {
             if (!err) {
                 const query = cmatch[2];
+                console.log(query);
                 if (cmatch[1].toLowerCase() == "artist") {
                     // Artist search
                     spotify.searchArtists(query, {}, (err, data) => {
