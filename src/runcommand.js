@@ -310,18 +310,14 @@ const funcs = {
                         if (!err) {
                             const bestMatch = data.body.tracks.items[0];
                             if (bestMatch) {
-                                const message = `Best match: ${bestMatch.name} by ${utils.getArtists(bestMatch)} (from ${bestMatch.album.name})${bestMatch.explicit ? " (Explicit)" : ""}`;
                                 const url = bestMatch.external_urls.spotify;
-                                const preview = bestMatch.preview_url;
-
-                
-                                    // Just send Spotify URL
-                                    utils.sendMessage({
-                                        "body": "",
-                                        "url": url
-                                    }, threadId);
+                                // Just send Spotify URL
+                                utils.sendMessage({
+                                    "body": "",
+                                    "url": url
+                                }, threadId);
                             } else {
-                                utils.sendError(`No results found for query "${query}"`, threadId);
+                                utils.sendError(`I couldn't find anything when I looked for "${query}"`, threadId);
                             }
                         } else {
                             utils.sendError(err, threadId);
