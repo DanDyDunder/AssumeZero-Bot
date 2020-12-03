@@ -317,7 +317,7 @@ const funcs = {
                                     "url": url
                                 }, threadId);
                             } else {
-                                utils.sendError(`I couldn't find anything when I looked for "${query}"`, threadId);
+                                utils.sendMessage(`I couldn't find anything when I looked for "${query}"`, threadId);
                             }
                         } else {
                             utils.sendError(err, threadId);
